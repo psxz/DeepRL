@@ -27,8 +27,8 @@ def range_tensor(end):
 def to_np(t):
     return t.cpu().detach().numpy()
 
-def random_seed():
-    np.random.seed()
+def random_seed(seed=None):
+    np.random.seed(seed)
     torch.manual_seed(np.random.randint(int(1e6)))
 
 def set_one_thread():
@@ -43,7 +43,7 @@ def epsilon_greedy(epsilon, x):
     if len(x.shape) == 1:
         return np.random.randint(len(x)) if np.random.rand() < epsilon else np.argmax(x)
     elif len(x.shape) == 2:
-        random_actions = np.random.randint(x.shape[1])
+        random_actions = np.random.randint(x.shape[1], size=x.shape[0])
         greedy_actions = np.argmax(x, axis=-1)
         dice = np.random.rand(x.shape[0])
         return np.where(dice < epsilon, random_actions, greedy_actions)

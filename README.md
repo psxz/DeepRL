@@ -1,5 +1,5 @@
 # DeepRL
-Modularized implementation of popular deep RL algorithms by PyTorch. Easy switch between classical control tasks (e.g., CartPole) and Atari games with raw pixel inputs.
+Modularized implementation of popular deep RL algorithms by PyTorch. Easy switch between toy tasks and challenging games.
 
 Implemented algorithms:
 * (Double/Dueling) Deep Q-Learning (DQN)
@@ -7,30 +7,32 @@ Implemented algorithms:
 * Quantile Regression DQN
 * (Continuous/Discrete) Synchronous Advantage Actor Critic (A2C)
 * Synchronous N-Step Q-Learning
-* Deep Deterministic Policy Gradient (DDPG, pixel & low-dim-state)
+* Deep Deterministic Policy Gradient (DDPG, low-dim-state)
 * (Continuous/Discrete) Synchronous Proximal Policy Optimization (PPO, pixel & low-dim-state)
 * The Option-Critic Architecture (OC)
-* Action Conditional Video Prediction
 
-Asynchronous algorithms (e.g., A3C) are removed in the current version but can be found in [v0.1](https://github.com/ShangtongZhang/DeepRL/releases/tag/v0.1).
+Asynchronous algorithms (e.g., A3C) can be found in [v0.1](https://github.com/ShangtongZhang/DeepRL/releases/tag/v0.1).
+Action Conditional Video Prediction can be found in [v0.4](https://github.com/ShangtongZhang/DeepRL/releases/tag/v0.4).
+
 
 # Dependency
 * MacOS 10.12 or Ubuntu 16.04
 * PyTorch v0.4.0
 * Python 3.6, 3.5
+* OpenAI Baselines (commit 8e56dd)
 * Core dependencies: `pip install -e .`
-* Optional: [Roboschool](https://github.com/openai/roboschool), [PyBullet](https://pypi.org/project/pybullet/)
 
 # Remarks
 * There is a super fast DQN implementation with an async actor for data generation and an async replay buffer to transfer data to GPU. Enable this implementation by setting `config.async_actor = True` and using `AsyncReplay`. However, with atari games this fast implementation may not work in macOS. Use Ubuntu or Docker instead.
 * Python 2 is not officially supported after [v0.3](https://github.com/ShangtongZhang/DeepRL/releases/tag/v0.3). However, I do expect most of the code will still work well in Python 2.
 * Although there is a `setup.py`, which means you can install the repo as a library, this repo is **never** designed to be a high-level library like Keras. Use it as your codebase instead.
+* **Code for my papers** can be found in corresponding branches, which may be good examples for extending this codebase.
 
 # Usage
 
 ```examples.py``` contains examples for all the implemented algorithms
 
-```Dockerfile``` contains an example environment (w/ pybullet, w/ roboschool, w/o GPU)
+```Dockerfile``` contains a perfect environment, highly recommended 
 
 Please use this bibtex if you want to cite this repo
 ```
@@ -53,18 +55,15 @@ Please use this bibtex if you want to cite this repo
 * This is my synchronous option-critic implementation, not the original one.
 * The curves are not directly comparable, as many hyper-parameters are different.
 
-## RoboschoolHopper-v1
+## Mujoco 
 
-![Loading...](https://raw.githubusercontent.com/ShangtongZhang/DeepRL/master/images/hopper.png)
+* DDPG evaluation performance.
+![Loading...](https://raw.githubusercontent.com/ShangtongZhang/DeepRL/master/images/DDPG.png)
 
-* The DDPG curve is the evaluation performance, rather than online.
 
-## PongNoFrameskip-v4
+* PPO online performance. 
+![Loading...](https://raw.githubusercontent.com/ShangtongZhang/DeepRL/master/images/PPO.png)
 
-![Loading...](https://raw.githubusercontent.com/ShangtongZhang/DeepRL/master/images/ACVP.png)
-
-* *Left*: One-step prediction *Right*: Ground truth
-* Prediction images are sampled after 110K iterations, and I only implemented one-step training for action-conditional-video-prediction.
 
 # References
 * [Human Level Control through Deep Reinforcement Learning](https://www.nature.com/nature/journal/v518/n7540/full/nature14236.html)

@@ -12,31 +12,24 @@ import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s: %(message)s')
 from .misc import *
 
-def get_logger(name='MAIN', file_name=None, log_dir='./log', skip=False, level=logging.INFO):
-    logger = logging.getLogger(name)
+def get_logger(tag=None, skip=False, level=logging.INFO):
+    logger = logging.getLogger()
     logger.setLevel(level)
-    if file_name is not None:
-        file_name = '%s-%s' % (file_name, get_time_str())
-        fh = logging.FileHandler('%s/%s.txt' % (log_dir, file_name))
+    if tag is not None:
+        fh = logging.FileHandler('./log/%s-%s.txt' % (tag, get_time_str()))
         fh.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s: %(message)s'))
         fh.setLevel(level)
         logger.addHandler(fh)
-    return Logger(log_dir, logger, skip)
+    return Logger(logger, './tf_log/logger-%s-%s' % (tag, get_time_str()), skip)
 
 class Logger(object):
-    def __init__(self, log_dir, vanilla_logger, skip=False):
-        try:
-            for f in os.listdir(log_dir):
-                if not f.startswith('events'):
-                    continue
-                os.remove('%s/%s' % (log_dir, f))
-        except IOError:
-            os.mkdir(log_dir)
+    def __init__(self, vanilla_logger, log_dir, skip=False):
         if not skip:
             self.writer = SummaryWriter(log_dir)
-        self.info = vanilla_logger.info
-        self.debug = vanilla_logger.debug
-        self.warning = vanilla_logger.warning
+        if vanilla_logger is not None:
+            self.info = vanilla_logger.info
+            self.debug = vanilla_logger.debug
+            self.warning = vanilla_logger.warning
         self.skip = skip
         self.all_steps = {}
 
@@ -52,20 +45,20 @@ class Logger(object):
         self.all_steps[tag] += 1
         return step
 
-    def scalar_summary(self, tag, value, step=None):
+    def add_scalar(self, tag, value, step=None):
         if self.skip:
             return
-        self.to_numpy(value)
+        value = self.to_numpy(value)
         if step is None:
             step = self.get_step(tag)
         if np.isscalar(value):
             value = np.asarray([value])
         self.writer.add_scalar(tag, value, step)
 
-    def histo_summary(self, tag, values, step=None):
+    def add_histogram(self, tag, values, step=None):
         if self.skip:
             return
-        self.to_numpy(values)
+        values = self.to_numpy(values)
         if step is None:
             step = self.get_step(tag)
-        self.writer.add_histogram(tag, values, step, bins=1000)
+        self.writer.add_histogram(tag, values, step)
